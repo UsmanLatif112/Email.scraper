@@ -48,9 +48,9 @@ with open("Website.csv", "r") as file:
             for match in matches:
                 print(match)
                 if match not in detail:
-                    detail += f"{match}"
-                    make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};{detail}\n", new=False)
-                    break
+                    detail += f"{match};"
+                make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};{detail}\n", new=False)
+                break
                 
             if not matches:
                 if "//www.facebook.com" in sources:
@@ -69,10 +69,10 @@ with open("Website.csv", "r") as file:
                         print(matchs)
                         time.sleep(2)
                         if matchs not in detail:
-                            detaile += f"{matchs}"
-                            make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};{detaile}\n", new=False)
-                            driver.execute_script("window.close();")
-                            break
+                            detaile += f"{matchs};"
+                        make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};{detaile}\n", new=False)
+                        break
+                        driver.execute_script("window.close();")
                         time.sleep(2)
                     driver.switch_to.window(driver.window_handles[-1])
                 if not matchxs:
@@ -85,13 +85,14 @@ with open("Website.csv", "r") as file:
                     for email in emails:
                         print(email)
                         if email not in emaill:
-                            emaill += f"{email}"
-                            make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};{emaill}\n", new=False)
+                            emaill += f"{email};"
+                    make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};{emaill}\n", new=False)
+                    break
                     time.sleep(1)
                     driver.execute_script("window.close();")
                     driver.switch_to.window(driver.window_handles[-1])
                     
-                if not emails:
+                if not pattern:
                     make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};Email Not Found\n", new=False)
     
         except:
