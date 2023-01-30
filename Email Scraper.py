@@ -31,14 +31,13 @@ make_csv("Email Data.csv", "city;Business Name;Address;Website;Phone#;Email\n", 
 # Start webdriver_manager
 
 chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('disable-notifications')
-driver = webdriver.Chrome(ChromeDriverManager().install())
+chrome_options.add_argument('--disable-notifications')
+driver = webdriver.Chrome(ChromeDriverManager().install(),options=chrome_options)
 driver.maximize_window()
 
 # Login With facebook account
 
-urll = "https://web.facebook.com/login"
-driver.get(urll)
+driver.get("https://web.facebook.com/login")
 actions = ActionChains(driver)
 actions.send_keys(Keys.ENTER).perform()
 time.sleep(1)
@@ -71,9 +70,9 @@ with open("Website.csv", "r") as file:
                          
         try:
             
-    #  Start scraping emails from websites
+            #  Start scraping emails from websites
 
-        # Open website if website have email
+            # Open website if website have email
 
             url = f"http://{value4}"
             driver.get(url)
@@ -89,9 +88,9 @@ with open("Website.csv", "r") as file:
                 make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};{detail}\n", new=False)
                 break
     
-    # If website dont have email check facebook icon on website 
-    
-        # if website have facebook open it new tab
+                # If website dont have email check facebook icon on website 
+                
+                # if website have facebook open it new tab
             
             if not matches:
                 if "//www.facebook.com" in sources:
@@ -112,23 +111,23 @@ with open("Website.csv", "r") as file:
                     detaile = ""
                     for matchs in matchxs:
                         print(matchs)
-                        time.sleep(2)
                         if matchs not in detail:
                             detaile += f"{matchs};"
                         make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};{detaile}\n", new=False)
                         break
                     driver.execute_script("window.close();")
-                    time.sleep(2)
+                    time.sleep(1)
                     driver.switch_to.window(driver.window_handles[-1])
                     
                 # if email not found with href tag check with regular expression 
                 
                 if not matchxs:
-                    sourcexs = driver.page_source
+                    # sourcexs = driver.page_source
                     time.sleep(2)
                     pattern = re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')
                     sourcexx = "<html>...</html>"
-                    emails = pattern.findall(sourcexs)
+                    emails = pattern.findall(sourcexx)
+                    # emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', sourcexs)
                     emaill = ""
                     for email in emails:
                         print(email)
@@ -139,16 +138,18 @@ with open("Website.csv", "r") as file:
                     driver.execute_script("window.close();")
                     time.sleep(1)
                     driver.switch_to.window(driver.window_handles[-1])
-                
-                # If email also not found with regular expression then print Email not found
+            
+                    # If email also not found with regular expression then print Email not found
                 
                 if not emails:
+                    print("No Email Found On Facebook")
                     make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};Email Not Found\n", new=False)
 
-# If Email not found on website and on facebook print emial not found
+            # If Email not found on website and on facebook print emial not found
   
         except:
-           make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};Email Not Found\n", new=False)    
-        time.sleep(1)
+            print("Email not Found on facebook and on Website")
+            make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};Email Not Found\n", new=False)    
 
+time.sleep(1)
 driver.quit()
