@@ -1,3 +1,5 @@
+# Imports 
+
 import re
 import time, csv
 import pandas as pd
@@ -11,7 +13,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
- 
+
+#  Make csv to save Scraped Data
+
 def make_csv(filename: str, data, new=True):
     """make a csv file with the given filename
     and enter the data
@@ -24,8 +28,40 @@ def make_csv(filename: str, data, new=True):
 make_csv("Email Data.csv", "Email Data from Websites\n", new=True)
 make_csv("Email Data.csv", "city;Business Name;Address;Website;Phone#;Email\n", new=False)
 
-driver = webdriver.Chrome(ChromeDriverManager().install())
+# Start webdriver_manager
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--disable-notifications')
+driver = webdriver.Chrome(ChromeDriverManager().install(),options=chrome_options)
 driver.maximize_window()
+
+# Login With facebook account
+
+driver.get("https://web.facebook.com/login")
+actions = ActionChains(driver)
+actions.send_keys(Keys.ENTER).perform()
+time.sleep(1)
+
+# Facebook login credentials
+
+User_name = "turgutjutt668@gmail.com"
+Pass_word = "Word@123"
+
+username = driver.find_element(By.XPATH, "//*[@id='email']")
+for char in User_name:
+    username.send_keys(char)
+    time.sleep(0.3)
+passwrod = driver.find_element(By.XPATH, "//*[@id='pass']")
+for char in Pass_word:
+    passwrod.send_keys(char)
+    time.sleep(0.3)
+time.sleep(1)
+login =  driver.find_element(By.XPATH, "//*[@id='loginbutton']").click()
+time.sleep(1)
+driver.execute_script("window.stop();")
+time.sleep(2)
+
+# Get values from csv file & execute one by one in webdriver
 
 with open("Website.csv", "r") as file:
     reader = csv.reader(file)
@@ -37,6 +73,9 @@ with open("Website.csv", "r") as file:
         value5 = row[4]
                          
         try:
+            #  Start scraping emails from websites
+            
+            # Open website if website have email
             url = f"http://{value4}"
             # url = "http://ultimatefitnesscentre.com.au"
             driver.get(url)
@@ -52,7 +91,11 @@ with open("Website.csv", "r") as file:
                     detail += f"{match};"
                 make_csv("Email Data.csv", f"{value1};{value2};{value3};{value4};{value5};{detail}\n", new=False)
                 break
-                
+            
+            # If website dont have email check facebook icon on website 
+
+            # if website have facebook open it new tab
+            
             if not matches:
                 if "//www.facebook.com" in sources:
                     print("facebook")
@@ -62,6 +105,9 @@ with open("Website.csv", "r") as file:
                     driver.execute_script(f"window.open('{facebook_link}', '_blank');")
                     driver.switch_to.window(driver.window_handles[-1])
                     time.sleep(5)
+                    
+                    # Check Email on facebook page with href tag 
+                    
                     print("Checking for href mailto: on Facebook")
                     sourcess = driver.page_source
                     time.sleep(2)
@@ -77,6 +123,8 @@ with open("Website.csv", "r") as file:
                         break
                     time.sleep(2)
                     driver.switch_to.window(driver.window_handles[-1])
+                
+                # if email not found with href tag check with regular expression
                     
                 if not matchxs:
                     print("Checking for regular expression on facebook")
@@ -95,6 +143,8 @@ with open("Website.csv", "r") as file:
                     time.sleep(2)
                     driver.execute_script("window.close();")
                     driver.switch_to.window(driver.window_handles[-1])
+                    
+                    # If email also not found with regular expression then print Email not found
                         
                     if not emails:
                         print("Email not found on facebook")
