@@ -97,6 +97,8 @@ with open("Website.csv", "r") as file:
             # if website have facebook open it new tab
             
             if not matches:
+                print("Checking For Facebook Icon on Website")
+                time.sleep(1)
                 if "//www.facebook.com" in sources:
                     print("facebook")
                     facebook = driver.find_element(By.XPATH, "//a[contains(@href, '//www.facebook.com')]")
